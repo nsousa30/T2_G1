@@ -5,7 +5,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
 
-category_to_int = {category: i for i, category in enumerate(os.listdir('../rgbd-dataset'))}
+category_to_int = {'apple': 0, 'banana': 1}
 
 class RGBDDataset(Dataset):
     def __init__(self, directory, transform=None):
@@ -13,7 +13,7 @@ class RGBDDataset(Dataset):
         self.transform = transform
         
         self.samples = []
-        for category in os.listdir(directory):
+        for category in ['apple', 'banana']:  # Filtrar apenas maçãs e bananas
             category_path = os.path.join(directory, category)
             for object_instance in os.listdir(category_path):
                 instance_path = os.path.join(category_path, object_instance)
@@ -22,11 +22,11 @@ class RGBDDataset(Dataset):
                         rgb_path = os.path.join(instance_path, file_name)
                         mask_name = file_name.replace('_crop.png', '_maskcrop.png')
                         mask_path = os.path.join(instance_path, mask_name)
-                        # Verificar se a máscara existe antes de adicionar aos samples
                         if os.path.isfile(mask_path):
                             self.samples.append((rgb_path, mask_path, category))
                         else:
                             print(f"Arquivo de máscara ausente: {mask_path}")
+
                             
 
     def __len__(self):
