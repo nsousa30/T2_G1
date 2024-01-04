@@ -17,9 +17,9 @@ print(f"Using device: {device}")
 
 dataset_path = '../data/rgbd-dataset'
 
-epochs = 2
+epochs = 10
 
-checkpoint_path = "../data/my_checkpoint.pth.tar"
+checkpoint_path = "../data/checkpoint.pth.tar"
 
 # Transformações
 transform = transforms.Compose([
@@ -36,8 +36,8 @@ train_data = Subset(dataset, train_indices)
 test_data = Subset(dataset, test_indices)
 
 # DataLoaders
-train_loader = DataLoader(train_data, batch_size=64, shuffle=True)  # Tamanho do lote reduzido
-test_loader = DataLoader(test_data, batch_size=64, shuffle=False)
+train_loader = DataLoader(train_data, batch_size=100, shuffle=True)  # Tamanho do lote reduzido
+test_loader = DataLoader(test_data, batch_size=100, shuffle=False)
 
 # Modelo
 num_classes = len(os.listdir(dataset_path))
@@ -50,9 +50,8 @@ optimizer = Adam(model.parameters(), lr=1e-4)
 if not os.path.exists('../data'):
     os.makedirs('../data')
 
-if os.path.exists(checkpoint_path):
-    load_checkpoint(checkpoint_path, model, optimizer)
 
+class_mapping = dataset.get_class_mapping()
 
 # Treinamento
-train(model, criterion, optimizer, train_loader, test_loader, device, epochs)
+train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)

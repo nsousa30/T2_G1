@@ -25,10 +25,11 @@ class RGBDDataset(Dataset):
                         # Verificar se a máscara existe antes de adicionar aos samples
                         if os.path.isfile(mask_path):
                             self.samples.append((rgb_path, mask_path, category))
-                        else:
-                            print(f"Arquivo de máscara ausente: {mask_path}")
+                        
                             
-
+    def get_class_mapping(self):
+        return {i: category for category, i in self.category_to_int.items()}
+    
     def __len__(self):
         return len(self.samples)
 
