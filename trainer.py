@@ -101,5 +101,5 @@ def train(model, criterion, optimizer, train_loader, test_loader, device, epochs
             }
             save_checkpoint(checkpoint, "checkpoint.pth.tar")
 
-        print(f'Época {epoch+1} concluída, Perda: {running_loss/len(train_loader)}, Precisão: {current_accuracy:.2f}%')
+        print(f'Época {epoch+1} concluída, Perda: {running_loss/len(train_loader)}, Precisão: {current_accuracy*100:.2f}%')
 

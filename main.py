@@ -17,7 +17,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Usando o dispositivo: {device}")
 
 # Define o caminho para o dataset e o caminho para salvar os checkpoints
-dataset_path = '../data/rgbd-datasetsmall'
+dataset_path = '../data/rgbd-dataset'
 checkpoint_path = "../data/checkpoint.pth.tar"
 
 # Define o número de épocas de treinamento
