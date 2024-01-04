@@ -5,13 +5,13 @@ from torch.utils.data import Dataset
 from PIL import Image
 import numpy as np
 
-category_to_int = {category: i for i, category in enumerate(os.listdir('../rgbd-dataset'))}
+
 
 class RGBDDataset(Dataset):
     def __init__(self, directory, transform=None):
         self.directory = directory
         self.transform = transform
-        
+        self.category_to_int = {category: i for i, category in enumerate(os.listdir(directory))}
         self.samples = []
         for category in os.listdir(directory):
             category_path = os.path.join(directory, category)
@@ -53,6 +53,6 @@ class RGBDDataset(Dataset):
         segmented_image = rgb_tensor * mask_tensor.float()
         
         # Codificar a categoria como um tensor
-        category_tensor = torch.tensor(category_to_int[category])
+        category_tensor = torch.tensor(self.category_to_int[category])
 
         return segmented_image, category_tensor

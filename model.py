@@ -8,9 +8,7 @@ class SimpleCNN(nn.Module):
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(2, 2)
-        
-        # Calcular o tamanho de entrada para a primeira camada linear
-        # Aqui, assumimos que a entrada inicial é uma imagem 224x224
+        # Dummy input para calcular o tamanho da saída das convoluções
         self._to_linear = None
         self._forward_conv(torch.zeros(1, 3, 224, 224))
 
@@ -20,10 +18,9 @@ class SimpleCNN(nn.Module):
     def _forward_conv(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
-        
+        # Somente calcula o 'to_linear' na primeira vez
         if self._to_linear is None:
             self._to_linear = x.shape[1] * x.shape[2] * x.shape[3]
-
         return x
 
     def forward(self, x):
