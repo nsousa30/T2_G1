@@ -15,6 +15,7 @@ import open3d as o3d
 import numpy as np
 from matplotlib import cm
 from more_itertools import locate
+import time  # Import the time module for introducing delays
 
 view = {
     "class_name": "ViewTrajectory",
@@ -42,7 +43,7 @@ def main():
     # -----------------------------------------------------------------
     # Initialization
     # -----------------------------------------------------------------
-    pcd_original = o3d.io.read_point_cloud('/home/alexandre/SAVI/T2_G1/pc/03.ply')
+    pcd_original = o3d.io.read_point_cloud('/home/alexandre/SAVI/T2_G1/pc/01.ply')
 
     # -----------------------------------------------------------------
     # Execution
@@ -103,7 +104,7 @@ def main():
     np_vertices = np.ndarray([8,3], dtype=float)
 
     sx=sy=0.6
-    sz_top=0.3
+    sz_top=0.2
     sz_bottom = -0.1
     np_vertices[0,0:3] = [sx,sy,sz_top]
     np_vertices[1,0:3] = [sx,-sy,sz_top]
@@ -114,7 +115,7 @@ def main():
     np_vertices[6,0:3] = [-sx,-sy,sz_bottom]
     np_vertices[7,0:3] = [-sx,sy,sz_bottom]
 
-    vertices = o3d.utility.Vector3dVector(np_vertices)
+    vertices = o3d.utility.Vector3dVector(np_vertices)  
 
     bbox=o3d.geometry.AxisAlignedBoundingBox.create_from_points(vertices)
 
@@ -131,55 +132,42 @@ def main():
 
     pcd_objects = pcd_cropped.select_by_index(inlier_idxs, invert=True)
 
+
     # Clustering
    
-    labels = pcd_objects.cluster_dbscan(eps=0.04, min_points=50, print_progress=True)
+    labels = pcd_objects.cluster_dbscan(eps=0.03, min_points=50, print_progress=True)
 
     print("N labels:", max(labels))
 
     group_idxs = list(set(labels))
-    #group_idxs.remove(-1)  # remove last group because its the group on the unassigned points
     num_groups = len(group_idxs)
     colormap = cm.Pastel1(range(0, num_groups))
 
-    group_point_clouds = []
-    for group_idx in group_idxs:  # Cycle all groups, i.e.,
-
-        group_points_idxs = list(locate(labels, lambda x: x == group_idx))
-
-        group_point_cloud = pcd_objects.select_by_index(group_points_idxs, invert=False)
+   # Iterate through clusters and visualize them one by one
+    for group_idx in group_idxs:
+        if group_idx != -1:
+            group_points_idxs = list(locate(labels, lambda x: x == group_idx))
+            group_point_cloud = pcd_objects.select_by_index(group_points_idxs, invert=False)
 
         color = colormap[group_idx, 0:3]
         group_point_cloud.paint_uniform_color(color)
-        group_point_clouds.append(group_point_cloud)
 
+        # Visualization with the current cluster and label
+        pcds_to_draw = [group_point_cloud, pcd_table]
+        # pcds_to_draw.extend([pcd_cropped])
 
-                          
+        frame_world = o3d.geometry.TriangleMesh().create_coordinate_frame(size=0.5, origin=np.array([0., 0., 0.]))
+        entities = [frame_world]
+        entities.extend(pcds_to_draw)
 
-    # Visualization ----------------------
-    pcd_downsampled.paint_uniform_color([0.4, 0.3, 0.3])
-    pcd_cropped.paint_uniform_color([0.9, 0.0, 0.0])
-    pcd_table.paint_uniform_color([0.0, 0.0, 0.9])
+        o3d.visualization.draw_geometries(entities,
+                                          zoom=0.3412,
+                                          front=view['trajectory'][0]['front'],
+                                          lookat=view['trajectory'][0]['lookat'],
+                                          up=view['trajectory'][0]['up'], point_show_normal=False)
 
-    pcds_to_draw = [pcd_table]
-    pcds_to_draw.extend(group_point_clouds)
-   
-    frame_world = o3d.geometry.TriangleMesh().create_coordinate_frame(size=0.5, origin=np.array([0., 0., 0.]))
-    
-    entities = [pcd_table]
-    entities.append(frame_world)
-    entities.append(frame_table)
-    entities.extend(pcds_to_draw)
-    o3d.visualization.draw_geometries(entities,
-                                      zoom=0.3412,
-                                      front=view['trajectory'][0]['front'],
-                                      lookat=view['trajectory'][0]['lookat'],
-                                      up=view['trajectory'][0]['up'], point_show_normal=False)
-
-    # -----------------------------------------------------------------
-    # Termination
-    # -----------------------------------------------------------------
-
-
+        # Print the label for the current cluster
+        print("Label for current frame:", group_idx)
+        time.sleep(2)  # Introduce a delay to observe each cluster
 if __name__ == "__main__":
     main()
