@@ -90,6 +90,4 @@ def classify_loaded_image(image, model, class_mapping, device, transform=None):
 
     return predicted_class
 
-# Uso da função:
-# Sup
 
