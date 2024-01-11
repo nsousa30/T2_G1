@@ -11,6 +11,7 @@ from dataset import RGBDDataset
 from model import SimpleCNN
 from trainer import train, load_checkpoint
 from PIL import Image
+from torchvision.transforms import Compose, Resize, ToTensor
 
 # Define se o dispositivo de treinamento será CPU ou GPU
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -59,9 +60,9 @@ if os.path.exists('../data'):
 class_mapping = dataset.get_class_mapping()
 
 # Inicia o treinamento
-train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
+#train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
 
-from torchvision.transforms import Compose, Resize, ToTensor
+
 
 def classify_loaded_image(image, model, class_mapping, device, transform=None):
     """
