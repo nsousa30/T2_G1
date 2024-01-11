@@ -61,24 +61,35 @@ class_mapping = dataset.get_class_mapping()
 # Inicia o treinamento
 train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
 
-def process_image(image_path):
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),  # Redimensiona para o tamanho esperado pelo modelo
-        transforms.ToTensor(),          # Converte para tensor
-        # Incluir aqui a normalização, se foi usada durante o treinamento
-    ])
+from torchvision.transforms import Compose, Resize, ToTensor
 
-    image = Image.open(image_path).convert('RGB')
-    return transform(image).unsqueeze(0)  # Adiciona uma dimensão de batch
+def classify_loaded_image(image, model, class_mapping, device, transform=None):
+    """
+    Classifica uma imagem previamente carregada.
 
-# Função para prever a classe de uma imagem processada
-def predict_class(model, processed_image, device, class_mapping):
-    model.eval()  # Coloca o modelo em modo de avaliação
-    processed_image = processed_image.to(device)
+    :param image: Objeto de imagem PIL já carregado.
+    :param model: Modelo treinado para classificação.
+    :param class_mapping: Dicionário que mapeia índices de classes para nomes de classes.
+    :param device: Dispositivo no qual o modelo está rodando, por exemplo 'cuda' ou 'cpu'.
+    :return: Nome da classe prevista.
+    """
+   
 
-    with torch.no_grad():  # Desativa a computação do gradiente
-        outputs = model(processed_image)
-        _, predicted = torch.max(outputs, 1)
-        class_index = predicted.item()
+    # Aplicar as transformações na imagem
+    image_tensor = transform(image).unsqueeze(0)  # Adiciona uma dimensão de lote
+    image_tensor = image_tensor.to(device)
 
-    return class_mapping[class_index]
+    # Colocar o modelo em modo de avaliação e fazer a previsão
+    model.eval()
+    with torch.no_grad():
+        outputs = model(image_tensor)
+        _, predicted_idx = torch.max(outputs, 1)
+
+    # Mapear o índice previsto de volta para o nome da classe original
+    predicted_class = class_mapping[predicted_idx.item()]
+
+    return predicted_class
+
+# Uso da função:
+# Sup
+
