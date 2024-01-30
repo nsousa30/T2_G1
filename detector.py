@@ -43,7 +43,7 @@ def main():
     # -----------------------------------------------------------------
     # Initialization
     # -----------------------------------------------------------------
-    pcd_original = o3d.io.read_point_cloud('/home/alexandre/SAVI/T2_G1/pc/01.ply')
+    pcd_original = o3d.io.read_point_cloud('./data/01.ply')
 
     # -----------------------------------------------------------------
     # Execution
@@ -153,7 +153,7 @@ def main():
         group_point_cloud.paint_uniform_color(color)
 
         # Visualization with the current cluster and label
-        pcds_to_draw = [group_point_cloud, pcd_table]
+        pcds_to_draw = [group_point_cloud,bbox, pcd_original]
         # pcds_to_draw.extend([pcd_cropped])
 
         frame_world = o3d.geometry.TriangleMesh().create_coordinate_frame(size=0.5, origin=np.array([0., 0., 0.]))

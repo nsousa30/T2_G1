@@ -125,9 +125,10 @@ def voxel_downsize(point_cloud, size):
 
 
 def main():
-    for file_index in range(1, 15):
+    # for file_index in range(1, 15):
+        file_index = 5
         file_prefix = f"{file_index:02}"
-        file_path = f'../data/{file_prefix}.ply'
+        file_path = f'./data/{file_prefix}.ply'
         original_point_cloud = load_point_cloud(file_path)
 
         # Center the referential and align Z-axis and rotate the point cloud
@@ -211,12 +212,12 @@ def main():
         coordinate_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.5, origin=[0, 0, 0])
 
         # # Visualize the point cloud with the coordinate frame
-        # o3d.visualization.draw_geometries([object_point_cloud, coordinate_frame, aabb],
-        #                                 window_name="Point Cloud with Coordinate Frame",
-        #                                 width=800,
-        #                                 height=600,
-        #                                 left=50,
-        #                                 top=50)
+        o3d.visualization.draw_geometries([object_point_cloud, coordinate_frame, aabb,original_point_cloud],
+                                        window_name="Point Cloud with Coordinate Frame",
+                                        width=800,
+                                        height=600,
+                                        left=50,
+                                        top=50)
 
 if __name__ == "__main__":
     main()

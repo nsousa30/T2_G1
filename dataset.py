@@ -20,21 +20,22 @@ class RGBDDataset(Dataset):
         self.transform = transform
         # Cria um mapeamento de categorias para inteiros de forma ordenada
         categories = sorted(os.listdir(directory))
+        print("categories")
+        print(categories)
+       
         self.category_to_int = {category: i for i, category in enumerate(categories)}
 
         self.samples = []
         # Itera sobre todas as categorias e arquivos no diretório
         for category in categories:
             category_path = os.path.join(directory, category)
-            for object_instance in os.listdir(category_path):
-                instance_path = os.path.join(category_path, object_instance)
-                for file_name in os.listdir(instance_path):
-                    if file_name.endswith('_crop.png'):  # Seleciona apenas imagens RGB
-                        rgb_path = os.path.join(instance_path, file_name)
-                        mask_name = file_name.replace('_crop.png', '_maskcrop.png')
-                        mask_path = os.path.join(instance_path, mask_name)
-                        if os.path.isfile(mask_path):  # Verifica se a máscara correspondente existe
-                            self.samples.append((rgb_path, mask_path, category))
+            for file_name in os.listdir(category_path):
+                if file_name.endswith('_crop.png'):  # Seleciona apenas imagens RGB
+                    rgb_path = os.path.join(category_path, file_name)
+                    mask_name = file_name.replace('_crop.png', '_maskcrop.png')
+                    mask_path = os.path.join(category_path, mask_name)
+                    if os.path.isfile(mask_path):  # Verifica se a máscara correspondente existe
+                        self.samples.append((rgb_path, mask_path, category))
 
     def get_class_mapping(self):
         """

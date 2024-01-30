@@ -17,11 +17,11 @@ from torchvision.transforms import Compose, Resize, ToTensor
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Usando o dispositivo: {device}")
 
-# Define o caminho para o dataset e o caminho para salvar os checkpoints
-dataset_path = '../data/rgbd-dataset'
+# Define o caminho para o dataset e o caminho para guardar os checkpoints
+dataset_path = './rgbd-dataset'
 checkpoint_path = "../data/checkpoint.pth.tar"
 
-# Define o número de épocas de treinamento
+# Define o número de épocas do treino
 epochs = 10
 
 # Define as transformações aplicadas nas imagens
@@ -59,8 +59,8 @@ if os.path.exists('../data'):
 # Obtém o mapeamento de classes
 class_mapping = dataset.get_class_mapping()
 
-# Inicia o treinamento
-#train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
+# Inicia o treino
+train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
 
 
 
@@ -71,7 +71,7 @@ def classify_loaded_image(image, model, class_mapping, device, transform=None):
     :param image: Objeto de imagem PIL já carregado.
     :param model: Modelo treinado para classificação.
     :param class_mapping: Dicionário que mapeia índices de classes para nomes de classes.
-    :param device: Dispositivo no qual o modelo está rodando, por exemplo 'cuda' ou 'cpu'.
+    :param device: Dispositivo no qual o modelo está a correr, por exemplo 'cuda' ou 'cpu'.
     :return: Nome da classe prevista.
     """
    

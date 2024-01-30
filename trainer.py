@@ -26,7 +26,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
         optimizer (torch.optim.Optimizer): Otimizador a ser carregado.
     
     Returns:
-        float: A melhor acurácia registrada no checkpoint.
+        float: A melhor accuracy registrada no checkpoint.
     """
     if os.path.isfile(checkpoint_path):
         checkpoint = torch.load(checkpoint_path)
