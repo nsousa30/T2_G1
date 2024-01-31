@@ -29,7 +29,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
         float: A melhor accuracy registrada no checkpoint.
     """
     if os.path.isfile(checkpoint_path):
-        checkpoint = torch.load(checkpoint_path)
+        checkpoint = torch.load(checkpoint_path, map_location=torch.device('cpu'))
         model.load_state_dict(checkpoint["state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         accuracy = checkpoint.get("accuracy", 0.0)  # Recupera a acurácia, ou 0 se não existir

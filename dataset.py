@@ -20,7 +20,7 @@ class RGBDDataset(Dataset):
         self.transform = transform
         # Cria um mapeamento de categorias para inteiros de forma ordenada
         categories = sorted(os.listdir(directory))
-        print("categories")
+        print("\nCategories:")
         print(categories)
        
         self.category_to_int = {category: i for i, category in enumerate(categories)}
