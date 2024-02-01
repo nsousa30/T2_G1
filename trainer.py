@@ -33,7 +33,7 @@ def load_checkpoint(checkpoint_path, model, optimizer):
         model.load_state_dict(checkpoint["state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer"])
         accuracy = checkpoint.get("accuracy", 0.0)
-        print(f"Checkpoint carregado com precisão de {accuracy:.2f}%.")
+        print(f"Checkpoint carregado com precisão de {accuracy * 100:.2f}%.")
         return accuracy
     else:
         print("Arquivo de checkpoint não encontrado.")

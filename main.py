@@ -96,12 +96,12 @@ if __name__ == "__main__":
     class_mapping = dataset.get_class_mapping()
 
     # Inicia o treino------------------------------------------------------------------------------------------------------------------
-    train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
+    #train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
 
     # OU
 
     # Inicia o teste--------------------------------------------------------------------------------------------------------------------
-    imagem = Image.open("cap_4_2_150_crop.png")
+    imagem = Image.open("soda_can_6_1_66_crop.png")
     imagem.show()
 
     prediction = classify_loaded_image(imagem, model=model, class_mapping=class_mapping, device=device, transform=transform)
