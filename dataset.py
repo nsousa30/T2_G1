@@ -65,16 +65,16 @@ class RGBDDataset(Dataset):
         rgb_path, mask_path, category = self.samples[idx]
         # Carrega e converte a imagem RGB e a máscara correspondente
         rgb_image = Image.open(rgb_path).convert('RGB')
-        mask_image = Image.open(mask_path).resize(rgb_image.size, Image.NEAREST)
+        #mask_image = Image.open(mask_path).resize(rgb_image.size, Image.NEAREST)
         
         # Aplica as transformações definidas
         if self.transform:
             rgb_image = self.transform(rgb_image)
-            mask_image = self.transform(mask_image)
+            #mask_image = self.transform(mask_image)
 
         # Cria um tensor binário da máscara e aplica na imagem RGB
-        mask_tensor = torch.tensor(np.array(mask_image), dtype=torch.uint8) > 0
-        segmented_image = torch.tensor(np.array(rgb_image), dtype=torch.float32) * mask_tensor.float()
+        #mask_tensor = torch.tensor(np.array(mask_image), dtype=torch.uint8) > 0
+        segmented_image = torch.tensor(np.array(rgb_image), dtype=torch.float32) #* mask_tensor.float()
 
         # Converte o nome da categoria em um tensor
         category_tensor = torch.tensor(self.category_to_int[category], dtype=torch.long)

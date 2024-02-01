@@ -15,7 +15,7 @@ from torchvision.transforms import Compose, ToTensor
 import torch.nn.functional as F
 
 
-def classify_loaded_image(image, model, class_mapping, device, transform = None):
+def classify_loaded_image(image, model, class_mapping, device, transform):
     """
     Classifica uma imagem previamente carregada.
 
@@ -28,7 +28,7 @@ def classify_loaded_image(image, model, class_mapping, device, transform = None)
    
     # Aplicar as transformações na imagem
     image_tensor = transform(image).unsqueeze(0)  # Adiciona uma dimensão de lote
-    # image_tensor = transform(image)  # Adiciona uma dimensão de lote
+    #image_tensor = transform(image)  # Adiciona uma dimensão de lote
     image_tensor = image_tensor.to(device)
 
     # Colocar o modelo em modo de avaliação e fazer a previsão
@@ -85,8 +85,8 @@ if __name__ == "__main__":
     optimizer = Adam(model.parameters(), lr=1e-4)
 
     # # Se não existir a pasta para salvar os dados, cria-a
-    # if not os.path.exists('../trained_model'):
-    #     os.makedirs('../trained_model')
+    if not os.path.exists('../trained_model'):
+         os.makedirs('../trained_model')
 
     # Se existir a pasta, tenta carregar o checkpoint
     if os.path.exists('../trained_model'):
@@ -96,12 +96,12 @@ if __name__ == "__main__":
     class_mapping = dataset.get_class_mapping()
 
     # Inicia o treino------------------------------------------------------------------------------------------------------------------
-    # train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
+    train(model, criterion, optimizer, train_loader, test_loader, device, epochs, num_classes, class_mapping, checkpoint_path)
 
     # OU
 
     # Inicia o teste--------------------------------------------------------------------------------------------------------------------
-    imagem = Image.open("coffee_mug_7_1_31_crop.png")
+    imagem = Image.open("cap_4_2_150_crop.png")
     imagem.show()
 
     prediction = classify_loaded_image(imagem, model=model, class_mapping=class_mapping, device=device, transform=transform)
