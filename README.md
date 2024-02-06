@@ -1,4 +1,4 @@
-# README do Repositório
+# T2_G1
 
 Este repositório contém os códigos desenvolvidos no ambito do trabalho 2 de SAVI. O trabalho inclui um modelo de rede neural simples (`SimpleCNN`), um script principal (`main.py`) para treino e classificação de imagens, um script de treino (`trainer.py`), e um módulo para criação do dataset personalizado (`dataset.py`).
 
