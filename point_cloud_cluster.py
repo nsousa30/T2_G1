@@ -407,13 +407,12 @@ if __name__ == "__main__":
         
         distancias = []
         area_ref = lista_propriedades_objetos[num_object]["w"] * lista_propriedades_objetos[num_object]["h"]
-        print("area_ref" + str(area_ref))
+        
 
         # Display the result    
         for i in range(1, num_labels):
             # Skip the background label (label 0)
             x, y, w, h, area = stats[i]
-            print("area" + str(area))
             distancias.append(abs(area - (area_ref*0.6)))
 
         index_distancia_minima = np.argmin(distancias)
