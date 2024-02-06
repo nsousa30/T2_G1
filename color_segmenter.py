@@ -110,7 +110,7 @@ def main():
 
     # # first capture of camera, needed for the creation of trackbars
     # _, image = capture.read()
-    file_index = 12
+    file_index = 9
     file_prefix = f"{file_index:02}"
     filename_rgb_image = f'rgbd_scenes_dataset/{file_prefix}-color.png'
     image = cv2.imread(filename_rgb_image)

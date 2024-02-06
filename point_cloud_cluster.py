@@ -42,7 +42,10 @@ hsv_image_boundaries = { "chavena_amarela": { "H": [24, 30], "S": [164, 255], "V
                         "chapeu_branco": { "H": [31, 255], "S": [0, 44], "V": [168, 255]},
                         "chapeu_preto": { "H": [76, 155], "S": [12, 210], "V": [0, 30]},
                         "lata_verde": { "H": [35, 100], "S": [38, 255], "V": [72, 187]},
-                        "chavena_branca": { "H": [21, 123], "S": [0, 45], "V": [123, 241]}}
+                        "chavena_branca": { "H": [21, 123], "S": [0, 45], "V": [123, 241]},
+                        "taca_amarela": { "H": [17, 28], "S": [241, 255], "V": [77, 201]},
+                        "tijela_branca": { "H": [31, 99], "S": [15, 201], "V": [49, 219]},
+                        "cl_Castanho_branco": { "H": [11, 30], "S": [69, 255], "V": [83, 148]},}
 
 
 def rotation_matrix_from_vectors(vec1, vec2):
@@ -384,6 +387,7 @@ if __name__ == "__main__":
                 break
     
         mask = cv2.inRange(hsv_image, (minH, minS, minV), (maxH, maxS, maxV))
+        cv2.imshow("mask", mask)
 
         rectangle_mask = np.zeros((height, width), dtype=np.uint8)
         cv2.rectangle(rectangle_mask, (60, 120), (570, 400), 255, -1)
@@ -403,18 +407,20 @@ if __name__ == "__main__":
         
         distancias = []
         area_ref = lista_propriedades_objetos[num_object]["w"] * lista_propriedades_objetos[num_object]["h"]
-    
+        print("area_ref" + str(area_ref))
+
         # Display the result    
         for i in range(1, num_labels):
             # Skip the background label (label 0)
             x, y, w, h, area = stats[i]
+            print("area" + str(area))
             distancias.append(abs(area - (area_ref*0.6)))
 
         index_distancia_minima = np.argmin(distancias)
         x, y, w, h, area = stats[index_distancia_minima+1]
 
-        w = lista_propriedades_objetos[num_object]["w"]
-        h = lista_propriedades_objetos[num_object]["h"] * 1.2
+        w = lista_propriedades_objetos[num_object]["w"] *1.1
+        h = lista_propriedades_objetos[num_object]["h"] * 1.3
         centro = centroids[index_distancia_minima+1]
 
         cropped_image = bgr_image_copy[round(centro[1])-round(h/2):round(centro[1])+round(h/2), round(centro[0])-round(w/2):round(centro[0])+round(w/2)]

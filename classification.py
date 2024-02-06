@@ -48,7 +48,7 @@ def classify_loaded_image(image, model, class_mapping, device, transform):
     return predicted_class
 
 def convert_numbers_to_words(numbers):
-    words = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze']
+    words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen']
     
     if len(numbers) == 1:
         return words[int(numbers)]
@@ -153,12 +153,12 @@ if __name__ == "__main__":
         # Converte os números em palavras
         numbers_in_words = convert_numbers_to_words(first_two_numbers)
         number_objects = len(resultados)
-        mytext = f'A cena {numbers_in_words} tem {number_objects} objectos. Tem '
+        mytext = f'The scene{numbers_in_words} has {number_objects} objects. It has '
 
         for obj in range(0, len(resultados)):
             mytext += resultados[obj] + ', '
 
-        language = 'pt'
+        language = 'en'
 
         myobj = gTTS(text=mytext, lang=language, slow=False)
         myobj.save("scene.mp3")
