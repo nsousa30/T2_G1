@@ -101,10 +101,20 @@ if __name__ == "__main__":
     # OU
 
     # Inicia o teste--------------------------------------------------------------------------------------------------------------------
-    imagem = Image.open("soda_can_6_1_66_crop.png")
-    imagem.show()
+    # Specify the folder path
+    folder_path = "./output_cropped_images"
 
-    prediction = classify_loaded_image(imagem, model=model, class_mapping=class_mapping, device=device, transform=transform)
+    # Specify the image file name (with extension, e.g., 'image.jpg')
+    image_file_name = '08_00.png'
+
+    # Construct the full path
+    image_path = os.path.join(folder_path, image_file_name)
+
+    # Open the image
+    image = Image.open(image_path)
+    image.show()
+
+    prediction = classify_loaded_image(image, model=model, class_mapping=class_mapping, device=device, transform=transform)
 
     print("\nPrediction:")
     print(prediction)
