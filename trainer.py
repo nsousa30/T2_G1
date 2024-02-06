@@ -14,7 +14,7 @@ def save_checkpoint(state, filename="checkpoint.pth.tar"):
     """
     save_path = f"../data/{filename}"
     torch.save(state, save_path)
-    print("Checkpoint salvo com sucesso.")
+    print("Checkpoint guardado com sucesso.")
 
 def load_checkpoint(checkpoint_path, model, optimizer):
     """
