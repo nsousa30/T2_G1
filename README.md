@@ -57,8 +57,12 @@ Após isso, converteu-se a imagem rgb utilizada para hsv, devido à última ser 
 
 3. **Execução do Script Point_cloud_cluster:**
    Execute este script para obter as imagens. 
-   Para usar este script terá que indicar no seu terminal a cena pretendida, como se encontra no exemplo seguinte. Ex: python3 point_cloud_cluster.py -sc (número da cena)
+   Para usar este script terá que indicar no seu terminal a cena pretendida, como se encontra no exemplo seguinte. 
    Após escrever isto no seu terminal, o script irá começar a funcionar e irá obter as imagens recortadas e a sua representação na imagem rgb.
+
+   ```bash 
+   Ex: python3 point_cloud_cluster.py -sc (número da cena)
+   
 2. **Execução do Script Principal:**
    Execute o script principal classification.py para treinar ou classificar imagens. Modifique os parâmetros conforme necessário.
    ```bash
