@@ -13,6 +13,8 @@ from trainer import train, load_checkpoint
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor
 import torch.nn.functional as F
+from gtts import gTTS
+import pygame
 
 
 def classify_loaded_image(image, model, class_mapping, device, transform):
@@ -44,6 +46,22 @@ def classify_loaded_image(image, model, class_mapping, device, transform):
     predicted_class = class_mapping[predicted_idx.item()]
 
     return predicted_class
+
+def convert_numbers_to_words(numbers):
+    words = ['zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'catorze']
+    
+    if len(numbers) == 1:
+        return words[int(numbers)]
+    elif len(numbers) == 2:
+        if numbers.startswith('0'):
+            return words[int(numbers[1])]
+        elif numbers.startswith('1'):
+            return words[int(numbers)]
+        else:
+            first_digit = words[int(numbers[0])]
+            second_digit = words[int(numbers[1])] if numbers[1] != '0' else ''
+            return f'{first_digit} {second_digit}'.strip()
+
 
 
 if __name__ == "__main__":
@@ -103,18 +121,61 @@ if __name__ == "__main__":
     # Inicia o teste--------------------------------------------------------------------------------------------------------------------
     # Specify the folder path
     folder_path = "./output_cropped_images"
+    files = os.listdir(folder_path)
+    
+    resultados = []
+    # Iterate through each file
+    for file in files:
+        # Construct the full path of the file
+        file_path = os.path.join(folder_path, file)
 
-    # Specify the image file name (with extension, e.g., 'image.jpg')
-    image_file_name = '08_00.png'
+        # Open the image
+        image = Image.open(file_path)
+        image.show()
 
-    # Construct the full path
-    image_path = os.path.join(folder_path, image_file_name)
+        prediction = classify_loaded_image(image, model=model, class_mapping=class_mapping, device=device, transform=transform)
 
-    # Open the image
-    image = Image.open(image_path)
-    image.show()
+        print("\nPrediction:")
+        print(prediction)
+        resultados.append(prediction)
 
-    prediction = classify_loaded_image(image, model=model, class_mapping=class_mapping, device=device, transform=transform)
+    
+    # Verifica se há arquivos na pasta output_point_clouds
+    output_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
 
-    print("\nPrediction:")
-    print(prediction)
+    if output_files:
+        # Obtém o caminho completo do primeiro arquivo na pasta output_point_clouds
+        first_file = output_files[0]
+        
+        # Extrai os dois primeiros números do nome do arquivo
+        first_two_numbers = ''.join(filter(str.isdigit, first_file))[:2]
+
+        # Converte os números em palavras
+        numbers_in_words = convert_numbers_to_words(first_two_numbers)
+        number_objects = len(resultados)
+        mytext = f'A cena {numbers_in_words} tem {number_objects} objectos. Tem '
+
+        for obj in range(0, len(resultados)):
+            mytext += resultados[obj] + ', '
+
+        language = 'pt'
+
+        myobj = gTTS(text=mytext, lang=language, slow=False)
+        myobj.save("scene.mp3")
+
+        pygame.init()
+        pygame.mixer.music.load("scene.mp3")
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
+
+        # Apaga o arquivo de áudio
+        os.remove("scene.mp3")
+
+        # Apaga os arquivos na pasta output_point_clouds
+        for file in output_files:
+            file_path = os.path.join(folder_path, file)
+            os.remove(file_path)
+
+    else:
+        print("Não há arquivos na pasta output_point_clouds.")

@@ -10,6 +10,7 @@ from matplotlib import cm
 from more_itertools import locate
 import cv2
 import colorsys
+import argparse
 
 view = {
     "class_name": "ViewTrajectory",
@@ -59,14 +60,26 @@ def rotation_matrix_from_vectors(vec1, vec2):
     return rotation_matrix
 
 
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description=' With this program, you will detect each object in RGB-D scene',
+                                     epilog="Go ahead! Choose your scene!")
+
+    parser.add_argument('-sc', '--scene', help="Number of scene that you want to see.", default='12')
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
 
     # --------------------------------------
     # Initialization
     # --------------------------------------
+    args = parse_arguments()
+    file_index = args.scene
     # for file_index in range(1, 15):
-    file_index = 8
-    file_prefix = f"{file_index:02}"
+    # file_index = 12
+    file_prefix = f"{int(file_index):02}"
     filename_rgb_image = f'rgbd_scenes_dataset/{file_prefix}-color.png'
     filename_depth_image = f'rgbd_scenes_dataset/{file_prefix}-depth.png'
     color_raw = o3d.io.read_image(filename_rgb_image)
@@ -85,15 +98,8 @@ if __name__ == "__main__":
     width = 640
     height = 480
     K = o3d.camera.PinholeCameraIntrinsic(width, height, fx, fy, cx, cy)
-    print("K")
-    print(K)
 
-
-    # point_cloud = o3d.geometry.PointCloud.create_from_color_and_depth(rgbd_image, K)
     point_cloud = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd_image, K)
-
-    print("len(point_cloud.points)")
-    print(len(point_cloud.points))
 
     
     # --------------------------------------
@@ -111,16 +117,7 @@ if __name__ == "__main__":
 
     # --------------------------------------
     # Termination
-    # --------------------------------------
-    # save scene 
-
-    # output_folder = "./data"
-    # os.makedirs(output_folder, exist_ok=True)
-
-    # output_filename = os.path.join(output_folder, f"{file_prefix}.ply")
-    # o3d.io.write_point_cloud(output_filename, point_cloud)
-
-    # original_point_cloud = o3d.io.read_point_cloud(f'./data/{file_prefix}.ply')    
+    # -------------------------------------- 
     
     pcd_downsampled = point_cloud.voxel_down_sample(voxel_size=0.02)
     original_pcd = point_cloud.voxel_down_sample(voxel_size=0.02)
@@ -177,47 +174,6 @@ if __name__ == "__main__":
 
     points = np.dot(points, rotation_matrix)  #colocar os pontos com as novas coordenadas, para filtrar valores de altura
 
-
-    # Filtrar pontos pela sua altura (eixo z). So queremos ficar com a mesa (e alguns pontos residuais) ----------------
-    #chao = min(points[:][2])
-    
-    #altura_minima = 0.3
-
-    
-
-    #idx = 0
-    #while idx < len(points):
-
-    #    if  points[idx][2] <thresholds["down"] or points[idx][2] > thresholds["up"]:
-    #       points = np.delete(points, idx, axis=0)
-    #    else:
-    #       idx += 1
-
-    #points = np.dot(points, np.linalg.inv(rotation_matrix))
-
-    #pcd_downsampled.points = o3d.utility.Vector3dVector(points)
-
-    # ---------------------------------------------------------------------------------------------------------------------
-    
-    
-    #  Filter points in pointcloud to delete every points with few neibourghs. The goal is to have only the table top ------------------------------
-
-    # print("Statistical oulier removal")
-    # cl, ind = pcd_downsampled.remove_statistical_outlier(nb_neighbors=thresholds["first_outliers"][0], std_ratio=thresholds["first_outliers"][1])
-    # inlier_cloud = cl.select_by_index(ind)
-
-    #print("Radius oulier removal")
-    #cl, ind = pcd_downsampled.remove_radius_outlier(nb_points=thresholds["first_outliers"][0], radius=thresholds["first_outliers"][1])
-    # inlier_cloud = cl.select_by_index(ind)
-
-   
-
-    #print("Radius oulier removal")
-    #cl, ind = cl.remove_radius_outlier(nb_points=thresholds["second_outliers"][0], radius=thresholds["second_outliers"][1])
-
-    #print("\nNumber of Points:")
-    #print(len(np.asarray(cl.points)))
-
     # ---------------------------------------------------------------------------------------------------------------------
     
     # Compute the centroid of pointcloud. The goal is to get the translation vector from world frame to table top center frame---------------------
@@ -256,18 +212,7 @@ if __name__ == "__main__":
 
     vertices = o3d.utility.Vector3dVector(np_vertices)  
 
-    #bb_vertices_table_frame = np.dot(np_vertices,  np.linalg.inv(rotation_matrix)) 
-    #for i in range(0, 8):
-    #     new_vertices[i, 0:3] = bb_vertices_table_frame[i, 0:3] + centroid
-
-
-    #bb_vertices_table_frame = np.sum(bb_vertices_table_frame, T1[0:3, 3]) 
-
     bbox=o3d.geometry.AxisAlignedBoundingBox.create_from_points(vertices)
-    #bbox=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(np_vertices))
-
-    #bbox = bbox.transform(T1)
-    # bbox=o3d.geometry.AxisAlignedBoundingBox.create_from_points(vertices)
 
     pcd_cropped = original_pcd.crop(bbox)
 
@@ -286,8 +231,6 @@ if __name__ == "__main__":
 
     labels = pcd_objects.cluster_dbscan(eps=0.12, min_points=70, print_progress=True)
 
-    print("\nMax label:", max(labels))
-
     group_idxs = list(set(labels))
     group_idxs.remove(-1)  # remove last group because its the group on the unassigned points
     num_groups = len(group_idxs)
@@ -305,8 +248,9 @@ if __name__ == "__main__":
         pcd_separate_objects.append(pcd_separate_object)
 
         
-    print("\nlen(pcd_separate_objects)")
+    print("\n\nSeparated Objects:")
     print(len(pcd_separate_objects))
+    print("\n\n")
 
     # Save each separated object as a PLY file
     output_folder = "./output_point_clouds"
@@ -321,7 +265,7 @@ if __name__ == "__main__":
     for i, pcd_separate_object in enumerate(pcd_separate_objects):
         output_filename = os.path.join(output_folder, f"{file_prefix}_object_{i}.ply")
         o3d.io.write_point_cloud(output_filename, pcd_separate_object)
-        print(f"Object {i} saved as {output_filename}")
+        # print(f"Object {i} saved as {output_filename}")
 
     # Visualization ----------------------
 
@@ -351,8 +295,8 @@ if __name__ == "__main__":
         point_cloud = o3d.io.read_point_cloud(ply_path)
 
         # COR --------------------------------------------------------------------------------
-        print("\npoint_cloud.colors")
         print(point_cloud.colors)
+        print("\n\n")
         cores = np.asarray(point_cloud.colors)
         cores_hsv = []
         for pixel in cores:
@@ -385,11 +329,10 @@ if __name__ == "__main__":
         lista_propriedades_objetos.append({"cor_media": np.round(cor_media_hsv*255), "cor_moda": np.round(cor_moda_hsv.mode*255), "h": h, "w": w })
 
         # Visualize the point cloud
-        #o3d.visualization.draw_geometries([point_cloud], window_name=f"Nuvem de Pontos para {file_prefix}", zoom=view['trajectory'][0]['zoom'] )
-        # o3d.visualization.draw_geometries([point_cloud, frame_table, frame_world], window_name=f"Nuvem de Pontos para {file_prefix}", zoom=1,
-        #                                    front=view['trajectory'][0]['front'],
-        #                                   lookat=view['trajectory'][0]['lookat'],
-        #                                  up=view['trajectory'][0]['up'])
+        o3d.visualization.draw_geometries([point_cloud, frame_table, frame_world], window_name=f"Nuvem de Pontos para {file_prefix}", zoom=1,
+                                           front=view['trajectory'][0]['front'],
+                                          lookat=view['trajectory'][0]['lookat'],
+                                         up=view['trajectory'][0]['up'])
     
 
     bgr_image = cv2.imread(filename_rgb_image)
@@ -397,6 +340,23 @@ if __name__ == "__main__":
     height = bgr_image.shape[0]
     width = bgr_image.shape[1]
     hsv_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2HSV)
+
+    print("\n\n\n\n")
+
+    for obj in range(0, len(lista_propriedades_objetos)):
+        print("\n ------------Propriedades do Objecto: -----------")
+        print(lista_propriedades_objetos[obj])
+        print("(cores em HSV)")
+
+
+    # Specify the folder path
+    folder_path = "./output_cropped_images"
+    # Verifica se há arquivos na pasta output_point_clouds
+    output_files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    # Apaga os arquivos na pasta output_point_clouds
+    for file in output_files:
+        file_path = os.path.join(folder_path, file)
+        os.remove(file_path)
 
     for num_object in range(0, len(lista_propriedades_objetos)):
         h = lista_propriedades_objetos[num_object]["h"]
@@ -454,14 +414,11 @@ if __name__ == "__main__":
         x, y, w, h, area = stats[index_distancia_minima+1]
 
         w = lista_propriedades_objetos[num_object]["w"]
-        h = lista_propriedades_objetos[num_object]["h"]
+        h = lista_propriedades_objetos[num_object]["h"] * 1.2
         centro = centroids[index_distancia_minima+1]
 
         cropped_image = bgr_image_copy[round(centro[1])-round(h/2):round(centro[1])+round(h/2), round(centro[0])-round(w/2):round(centro[0])+round(w/2)]
     
-        # Specify the folder path
-        folder_path = "./output_cropped_images"
-
         # Ensure the folder exists, create it if necessary
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
