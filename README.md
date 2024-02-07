@@ -66,4 +66,4 @@ Após isso, converteu-se a imagem rgb utilizada para hsv, devido à última ser 
 2. **Execução do Script Principal:**
    Execute o script principal classification.py para treinar ou classificar imagens. Modifique os parâmetros conforme necessário.
    ```bash
-   ./main.py
+   ./classification.py
