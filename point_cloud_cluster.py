@@ -387,7 +387,7 @@ if __name__ == "__main__":
                 break
     
         mask = cv2.inRange(hsv_image, (minH, minS, minV), (maxH, maxS, maxV))
-        cv2.imshow("mask", mask)
+        #cv2.imshow("mask", mask)
 
         rectangle_mask = np.zeros((height, width), dtype=np.uint8)
         cv2.rectangle(rectangle_mask, (60, 120), (570, 400), 255, -1)
